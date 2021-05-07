@@ -17,6 +17,7 @@
 plugins {
     id("com.android.application")
     kotlin("android")
+    id("org.jetbrains.compose")
 }
 
 android {
@@ -34,11 +35,6 @@ android {
 
     buildFeatures {
         buildConfig = false
-        compose = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
     packagingOptions {
