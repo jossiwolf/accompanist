@@ -16,10 +16,7 @@
 
 plugins {
     kotlin("multiplatform")
-
     id("com.android.library")
-    id("org.jetbrains.dokka")
-    id("me.tylerbwong.gradle.metalava")
     id("org.jetbrains.compose")
 }
 
@@ -36,27 +33,16 @@ android {
 }
 
 kotlin {
-    explicitApi()
-
-    jvm("desktop")
     android()
+    jvm("desktop")
 
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(compose.foundation)
-                api(libs.compose.ui.util)
-            }
-        }
+                implementation(project(":flowlayout"))
 
-        val androidTest by getting {
-            dependencies {
-                implementation(libs.junit)
-                implementation(libs.truth)
-
-                implementation(libs.compose.ui.test)
-                implementation(libs.compose.ui.ui)
-                implementation(libs.androidx.test.runner)
+                api(compose.material)
+                api(compose.materialIconsExtended)
             }
         }
     }
@@ -78,8 +64,8 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility(JavaVersion.VERSION_1_8)
-        targetCompatibility(JavaVersion.VERSION_1_8)
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
     }
 
     buildFeatures {
@@ -91,31 +77,10 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.compose.get()
     }
 
-    lint {
-        textReport = true
-        textOutput("stdout")
-        // We run a full lint analysis as build part in CI, so skip vital checks for assemble tasks
-        isCheckReleaseBuilds = false
-    }
-
     packagingOptions {
         // Some of the META-INF files conflict with coroutines-test. Exclude them to enable
         // our test APK to build (has no effect on our AARs)
         resources.excludes += "/META-INF/AL2.0"
         resources.excludes += "/META-INF/LGPL2.1"
     }
-
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-        }
-        animationsDisabled = true
-    }
 }
-
-metalava {
-    filename = "api/current.api"
-    reportLintsAsErrors = true
-}
-
-apply(plugin = "com.vanniktech.maven.publish")
