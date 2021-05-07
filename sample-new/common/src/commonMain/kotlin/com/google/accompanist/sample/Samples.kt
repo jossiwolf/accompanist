@@ -17,14 +17,19 @@
 package com.google.accompanist.sample
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +49,7 @@ val Samples = listOf(
     Sample("FlowColumn") { FlowColumnSample() },
 )
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Samples() {
     var currentSample by remember { mutableStateOf<Sample?>(null) }
@@ -51,6 +57,13 @@ fun Samples() {
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    if (currentSample != null) {
+                        IconButton(onClick = { currentSample = null }) {
+                            Icon(Icons.Default.ArrowBack, contentDescription = "Navigate back")
+                        }
+                    }
+                },
                 title = {
                     Text(currentSample?.name ?: "Accompanist Samples")
                 }
