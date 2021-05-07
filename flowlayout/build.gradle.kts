@@ -1,3 +1,5 @@
+import org.jetbrains.compose.compose
+
 /*
  * Copyright 2021 The Android Open Source Project
  *
@@ -49,14 +51,24 @@ kotlin {
             }
         }
 
-        val androidTest by getting {
+        val commonTest by getting {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.truth)
 
+                implementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
+            }
+        }
+
+        val androidTest by getting {
+            dependencies {
                 implementation(libs.compose.ui.test)
-                implementation(libs.compose.ui.ui)
-                implementation(libs.androidx.test.runner)
+            }
+        }
+
+        val desktopTest by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
             }
         }
     }

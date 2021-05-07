@@ -19,10 +19,10 @@
 
     <uses-sdk android:targetSdkVersion="30" />
 
-    <application>
+    <application
+        android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
-            android:name="com.google.accompanist.flowlayout.TestActivity"
-            android:theme="@android:style/Theme.Material.NoActionBar" />
+            android:name="androidx.activity.ComponentActivity" />
     </application>
 
 </manifest>
