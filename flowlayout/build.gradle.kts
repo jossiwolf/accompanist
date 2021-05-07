@@ -75,6 +75,10 @@ android {
             manifest.srcFile("src/androidMain/AndroidManifest.xml")
             res.srcDirs("src/androidMain/res")
         }
+        named("androidTest") {
+            manifest.srcFile("src/androidAndroidTest/AndroidManifest.xml")
+            res.srcDirs("src/androidAndroidTest/res")
+        }
     }
 
     compileOptions {
