@@ -15,14 +15,54 @@
  */
 
 plugins {
+    id 'org.jetbrains.kotlin.multiplatform'
     id 'com.android.library'
-    id 'kotlin-android'
     id 'org.jetbrains.dokka'
     id 'me.tylerbwong.gradle.metalava'
+    id 'org.jetbrains.compose'
+}
+
+// Workaround for https://youtrack.jetbrains.com/issue/KT-43944
+android {
+    configurations {
+        androidTestApi {}
+        androidTestDebugApi {}
+        androidTestReleaseApi {}
+        testApi {}
+        testDebugApi {}
+        testReleaseApi {}
+    }
 }
 
 kotlin {
     explicitApi()
+
+    jvm("desktop") {
+        dependencies {
+            implementation libs.compose.foundation.foundation
+            implementation libs.compose.ui.util
+        }
+    }
+
+    android {
+        publishLibraryVariants("release", "debug")
+
+        dependencies {
+            implementation libs.compose.foundation.foundation
+            implementation libs.compose.ui.util
+
+            // ======================
+            // Test dependencies
+            // ======================
+
+            androidTestImplementation libs.junit
+            androidTestImplementation libs.truth
+
+            androidTestImplementation libs.compose.ui.test
+            androidTestImplementation libs.compose.ui.ui
+            androidTestImplementation libs.androidx.test.runner
+        }
+    }
 }
 
 android {
@@ -54,6 +94,13 @@ android {
         checkReleaseBuilds false
     }
 
+    sourceSets {
+        named("main") {
+            manifest.srcFile("src/androidMain/AndroidManifest.xml")
+            res.srcDirs("src/androidMain/res")
+        }
+    }
+
     packagingOptions {
         // Some of the META-INF files conflict with coroutines-test. Exclude them to enable
         // our test APK to build (has no effect on our AARs)
@@ -67,22 +114,6 @@ android {
         }
         animationsDisabled true
     }
-}
-
-dependencies {
-    implementation libs.compose.foundation.foundation
-    implementation libs.compose.ui.util
-
-    // ======================
-    // Test dependencies
-    // ======================
-
-    androidTestImplementation libs.junit
-    androidTestImplementation libs.truth
-
-    androidTestImplementation libs.compose.ui.test
-    androidTestImplementation libs.compose.ui.ui
-    androidTestImplementation libs.androidx.test.runner
 }
 
 metalava {
