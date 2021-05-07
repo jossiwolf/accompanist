@@ -37,30 +37,26 @@ android {
 kotlin {
     explicitApi()
 
-    jvm("desktop") {
-        dependencies {
-            implementation libs.compose.foundation.foundation
-            implementation libs.compose.ui.util
+    jvm("desktop")
+    android()
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                api libs.compose.foundation.foundation
+                api libs.compose.ui.util
+            }
         }
-    }
 
-    android {
-        publishLibraryVariants("release", "debug")
+        androidTest {
+            dependencies {
+                implementation libs.junit
+                implementation libs.truth
 
-        dependencies {
-            implementation libs.compose.foundation.foundation
-            implementation libs.compose.ui.util
-
-            // ======================
-            // Test dependencies
-            // ======================
-
-            androidTestImplementation libs.junit
-            androidTestImplementation libs.truth
-
-            androidTestImplementation libs.compose.ui.test
-            androidTestImplementation libs.compose.ui.ui
-            androidTestImplementation libs.androidx.test.runner
+                implementation libs.compose.ui.test
+                implementation libs.compose.ui.ui
+                implementation libs.androidx.test.runner
+            }
         }
     }
 }
