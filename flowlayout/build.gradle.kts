@@ -55,19 +55,13 @@ kotlin {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.truth)
-
-                implementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
-            }
-        }
-
-        val androidTest by getting {
-            dependencies {
                 implementation(libs.compose.ui.test)
             }
         }
 
         val desktopTest by getting {
             dependencies {
+                implementation(compose("org.jetbrains.compose.ui:ui-test-junit4"))
                 implementation(compose.desktop.currentOs)
             }
         }
