@@ -166,7 +166,7 @@ jobs:
             ~/.gradle/caches/build-cache-*
           key: gradle-${{ hashFiles('checksum.txt') }}
 
-      - name: Build tests
+      - name: Run desktop tests
         run: ./gradlew desktopTest --scan
 
       - name: Clean secrets
@@ -179,8 +179,8 @@ jobs:
         with:
           name: desktop-test-results
           path: |
-            "**/build/reports/tests/"
-            "**/build/test-results/"
+            '**/build/reports/tests'
+            '**/build/test-results'
 
   deploy:
     if: github.event_name == 'push' # only deploy for pushed commits (not PRs)
