@@ -37,6 +37,7 @@ include ':flowlayout'
 include ':systemuicontroller'
 include ':swiperefresh'
 include ':sample'
+include ':navigation-compose-material'
 
 // Enable Gradle's version catalog support
 // https://docs.gradle.org/current/userguide/platforms.html
