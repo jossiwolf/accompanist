@@ -63,31 +63,6 @@ internal class SheetContentHostTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun testSheetShownAndHidden() = runTest {
-        val backStackEntryState = mutableStateOf<NavBackStackEntry?>(null)
-        val sheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden)
-
-        composeTestRule.setBottomSheetContent(
-            backStackEntryState,
-            sheetState,
-            onSheetShown = { },
-            onSheetDismissed = { }
-        )
-
-        backStackEntryState.value = createBackStackEntry(sheetState)
-        composeTestRule.runOnIdle {
-            assertWithMessage("Bottom sheet was shown")
-                .that(sheetState.isVisible).isTrue()
-        }
-
-        backStackEntryState.value = null
-        composeTestRule.runOnIdle {
-            assertWithMessage("Bottom sheet was hidden")
-                .that(sheetState.isVisible).isFalse()
-        }
-    }
-
-    @Test
     fun testOnSheetDismissedCalled_ManualDismiss() = runTest {
         val sheetState = ModalBottomSheetState(ModalBottomSheetValue.Hidden)
         val backStackEntry = createBackStackEntry(sheetState)
@@ -231,7 +206,6 @@ internal class SheetContentHostTest {
             ModalBottomSheetLayout(
                 sheetContent = {
                     SheetContentHost(
-                        columnHost = this,
                         backStackEntry = backStackEntry.value,
                         sheetState = sheetState,
                         saveableStateHolder = saveableStateHolder,
