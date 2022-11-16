@@ -22,9 +22,16 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -35,7 +42,7 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import com.google.accompanist.sample.AccompanistSampleTheme
-import java.util.UUID
+import kotlinx.coroutines.delay
 
 class BottomSheetNavSample : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,10 +84,17 @@ fun BottomSheetNavDemo() {
                 BottomSheet(
                     showFeed = { navController.navigate(Destinations.Feed) },
                     showAnotherSheet = {
-                        navController.navigate(Destinations.Sheet + "?arg=${UUID.randomUUID()}")
+                        navController.navigate("second")
                     },
                     arg = arg
                 )
+            }
+            bottomSheet("second") {
+                LazyColumn(Modifier.fillMaxSize()) {
+                    items(200) {
+                        Text("Tall sheet!!")
+                    }
+                }
             }
         }
     }
@@ -101,7 +115,17 @@ private fun HomeScreen(showSheet: () -> Unit, showFeed: () -> Unit) {
 
 @Composable
 private fun BottomSheet(showFeed: () -> Unit, showAnotherSheet: () -> Unit, arg: String) {
+    var items by remember { mutableStateOf(2) }
+    LaunchedEffect(Unit) {
+        delay(100)
+        items = 20
+    }
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        LazyColumn {
+            items(items) {
+                Text("Hi $it")
+            }
+        }
         Text("Sheet with arg: $arg")
         Button(onClick = showFeed) {
             Text("Click me to navigate!")
