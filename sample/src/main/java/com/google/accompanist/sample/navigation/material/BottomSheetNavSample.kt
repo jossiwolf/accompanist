@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -77,6 +77,7 @@ fun BottomSheetNavDemo() {
                     },
                     showFeed = { navController.navigate(Destinations.Feed) }
                 )
+                Text(navController.currentBackStackEntryAsState().value?.destination?.route.toString())
             }
             composable(Destinations.Feed) { Text("Feed!") }
             bottomSheet(Destinations.Sheet + "?arg={arg}") { backstackEntry ->
@@ -115,7 +116,7 @@ private fun HomeScreen(showSheet: () -> Unit, showFeed: () -> Unit) {
 
 @Composable
 private fun BottomSheet(showFeed: () -> Unit, showAnotherSheet: () -> Unit, arg: String) {
-    var items by remember { mutableStateOf(2) }
+    var items by remember { mutableStateOf(20) }
     LaunchedEffect(Unit) {
         delay(100)
         items = 20

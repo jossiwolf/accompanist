@@ -62,6 +62,7 @@ internal fun ColumnScope.SheetContentHost(
     onSheetShown: (entry: NavBackStackEntry) -> Unit,
     onSheetDismissed: (entry: NavBackStackEntry) -> Unit,
 ) {
+    println("JW composing SheetContentHost with $backStackEntry")
     if (backStackEntry != null) {
         val currentOnSheetShown by rememberUpdatedState(onSheetShown)
         val currentOnSheetDismissed by rememberUpdatedState(onSheetDismissed)
@@ -74,8 +75,9 @@ internal fun ColumnScope.SheetContentHost(
                 .distinctUntilChanged()
                 // distinctUntilChanged emits the initial value which we don't need
                 .drop(1)
-                .collect {
-                    if (it) {
+                .collect { visible ->
+                    println("JW sheet visibile $visible")
+                    if (visible) {
                         currentOnSheetShown(backStackEntry)
                     } else {
                         currentOnSheetDismissed(backStackEntry)
@@ -83,10 +85,12 @@ internal fun ColumnScope.SheetContentHost(
                 }
         }
         backStackEntry.LocalOwnersProvider(saveableStateHolder) {
-            val content = (backStackEntry.destination as BottomSheetNavigator.Destination).content
+            val content =
+                (backStackEntry.destination as BottomSheetNavigator.Destination).content
             content(backStackEntry)
         }
     } else {
+        println("JW composing empty sheet")
         EmptySheet()
     }
 }

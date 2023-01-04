@@ -3,7 +3,7 @@
 compose = "1.4.0-SNAPSHOT"
 composeCompiler = "1.3.2"
 composeMaterial3 = "1.0.1"
-composesnapshot = "9431709" # a single character = no snapshot
+composesnapshot = "9453161" # a single character = no snapshot
 
 # gradlePlugin and lint need to be updated together
 gradlePlugin = "7.3.1"

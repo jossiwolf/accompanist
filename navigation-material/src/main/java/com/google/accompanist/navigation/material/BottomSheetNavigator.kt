@@ -26,6 +26,7 @@ import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -43,6 +44,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.Navigator
 import androidx.navigation.NavigatorState
 import com.google.accompanist.navigation.material.BottomSheetNavigator.Destination
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -54,6 +56,7 @@ import kotlinx.coroutines.launch
  */
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalMaterialApi::class)
+@Stable
 class BottomSheetNavigatorSheetState(internal val sheetState: ModalBottomSheetState) {
     /**
      * @see ModalBottomSheetState.isVisible
@@ -200,7 +203,7 @@ class BottomSheetNavigator(
             // animation has completed
             DisposableEffect(backStackEntries) {
                 transitionsInProgressEntries.forEach {
-                    if (it != latestEntry) state.markTransitionComplete(it)
+                    if (it != latestEntry || it != latestActualEntry) state.markTransitionComplete(it)
                 }
                 onDispose { }
             }
