@@ -82,21 +82,5 @@ internal fun ColumnScope.SheetContentHost(
                 (backStackEntry.destination as BottomSheetNavigator.Destination).content
             content(backStackEntry)
         }
-    } else {
-        EmptySheet() // TODO: Remove after debugging, the upstream issue is fixed
-    }
-}
-
-@Composable
-private fun EmptySheet() {
-    Box(
-        Modifier
-            .height(56.dp)
-            .background(Color.Red)
-    ) {
-        Text(
-            "You should not be seeing this text. It's a bug, sorry!",
-            Modifier.align(Alignment.Center)
-        )
     }
 }

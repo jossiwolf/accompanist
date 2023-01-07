@@ -37,6 +37,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameMillis
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.FloatingWindow
 import androidx.navigation.NavBackStackEntry
@@ -118,11 +119,21 @@ class BottomSheetNavigatorSheetState(internal val sheetState: ModalBottomSheetSt
 fun rememberBottomSheetNavigator(
     animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec
 ): BottomSheetNavigator {
-    val sheetState = rememberModalBottomSheetState(
+    val initialSheetState = rememberModalBottomSheetState(
         ModalBottomSheetValue.Hidden,
+        skipHalfExpanded = false,
         animationSpec = animationSpec
     )
-    return remember { BottomSheetNavigator(sheetState) }
+    val navigator = remember { BottomSheetNavigator(skipHalfExpandedInitially = false, initialSheetState)}
+    DisposableEffect(navigator.skipHalfExpanded) {
+        navigator.sheetState = ModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            animationSpec = animationSpec,
+            isSkipHalfExpanded = navigator.skipHalfExpanded
+        )
+        onDispose {  }
+    }
+    return navigator
 }
 
 /**
@@ -145,8 +156,11 @@ fun rememberBottomSheetNavigator(
 @OptIn(ExperimentalMaterialApi::class)
 @Navigator.Name("BottomSheetNavigator")
 class BottomSheetNavigator(
-    internal val sheetState: ModalBottomSheetState
+    skipHalfExpandedInitially: Boolean,
+    initialSheetState: ModalBottomSheetState
 ) : Navigator<Destination>() {
+
+    internal var sheetState by mutableStateOf(initialSheetState)
 
     private var attached by mutableStateOf(false)
 
@@ -179,6 +193,9 @@ class BottomSheetNavigator(
      */
     val navigatorSheetState = BottomSheetNavigatorSheetState(sheetState)
 
+    var skipHalfExpanded by mutableStateOf(skipHalfExpandedInitially)
+        private set
+
     /**
      * A [Composable] function that hosts the current sheet content. This should be set as
      * sheetContent of your [ModalBottomSheetLayout].
@@ -197,9 +214,28 @@ class BottomSheetNavigator(
                             entry.lifecycle.currentState.isAtLeast(Lifecycle.State.INITIALIZED)
                         }
                     }
-                    //.distinctUntilChanged()
                     .transform { latestEntry ->
                         sheetState.hide()
+                        // Update destination-level flags if navigating to a sheet destination
+                        if (latestEntry != null) {
+                            val skipHalfExpandedAtDestination =
+                                (latestEntry.destination as Destination).skipHalfExpanded
+                            val sheetStateRequiresUpdate = skipHalfExpanded != skipHalfExpandedAtDestination
+                            if (sheetStateRequiresUpdate) {
+                                // We will update the sheet state from an effect, so we depend on
+                                // recomposition to happen
+                                val sheetStateBeforeUpdate = sheetState
+                                // 1. Update the skipHalfExpanded flag to trigger recomposition
+                                skipHalfExpanded = skipHalfExpandedAtDestination
+                                var sheetStateUpdated = false
+                                // Wait until the sheet state has been updated
+                                while(!sheetStateUpdated) {
+                                    withFrameMillis {
+                                        sheetStateUpdated = sheetState != sheetStateBeforeUpdate
+                                    }
+                                }
+                            }
+                        }
                         emit(latestEntry)
                     }
                     .collectLatest { value = it }
@@ -270,6 +306,7 @@ class BottomSheetNavigator(
     @NavDestination.ClassType(Composable::class)
     class Destination(
         navigator: BottomSheetNavigator,
+        internal val skipHalfExpanded: Boolean = false,
         internal val content: @Composable ColumnScope.(NavBackStackEntry) -> Unit
     ) : NavDestination(navigator), FloatingWindow
 }

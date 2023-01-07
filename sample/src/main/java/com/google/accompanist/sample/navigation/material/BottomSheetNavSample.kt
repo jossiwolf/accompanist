@@ -90,7 +90,7 @@ fun BottomSheetNavDemo() {
                     arg = arg
                 )
             }
-            bottomSheet("second") {
+            bottomSheet("second", skipHalfExpanded = true) {
                 LazyColumn(Modifier.fillMaxSize()) {
                     items(200) {
                         Text("Tall sheet!!")
